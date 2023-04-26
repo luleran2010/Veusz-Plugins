@@ -1,9 +1,8 @@
 import numpy as np
 import h5py
-from veusz.plugins import *
+import veusz.plugins as plugins
 
-
-class ImportPluginPhononDispersion(ImportPlugin):
+class ImportPluginPhononDispersion(plugins.ImportPlugin):
     """An example plugin for reading a set of unformatted numbers
     from a file."""
 
@@ -17,12 +16,12 @@ class ImportPluginPhononDispersion(ImportPlugin):
     file_extensions = set(['.h5', '.hdf5'])
 
     def __init__(self):
-        ImportPlugin.__init__(self)
+        plugins.ImportPlugin.__init__(self)
         self.fields = [
-            ImportFieldCheck('details', descr='Detailed Information')
+            plugins.ImportFieldCheck('details', descr='Detailed Information')
         ]
 
-    def doImport(self, params: ImportPluginParams):
+    def doImport(self, params: plugins.ImportPluginParams):
         """Actually import data
         params is a ImportPluginParams object.
         Return a list of ImportDataset1D, ImportDataset2D objects
@@ -55,16 +54,17 @@ class ImportPluginPhononDispersion(ImportPlugin):
         details = []
         if params.field_results['details']:
             details = [
-                ImportDataset1D('nbands', [nbands]),
-                ImportDataset1D('distances1', distance)
+                plugins.ImportDataset1D('nbands', [nbands]),
+                plugins.ImportDataset1D('distances1', distance)
             ]
 
         return [
-            ImportDataset1D('distances', dist),
-            ImportDataset1D('frequencies', freq),
-            ImportDataset1D('tickd', tickd),
-            ImportDatasetText('tickl', tickl)
+            plugins.ImportDataset1D('distances', dist),
+            plugins.ImportDataset1D('frequencies', freq),
+            plugins.ImportDataset1D('tickd', tickd),
+            plugins.ImportDatasetText('tickl', tickl)
         ] +  details
-
-# add the class to the registry. An instance also works, but is deprecated
-importpluginregistry.append(ImportPluginPhononDispersion)
+    
+plugins.importpluginregistry += [
+    ImportPluginPhononDispersion
+]
