@@ -35,15 +35,18 @@ class ImportPluginPhononDispersion(plugins.ImportPlugin):
         path = phf['path'][:]
         segment_nqpoint = phf['segment_nqpoint'][:]
 
+        nseg = distance.shape[0]
         nbands = frequency.shape[-1]
-        dist = np.concatenate((distance, np.array([np.nan]*3).reshape((3,1))), axis=1).flatten()
-        dist = dist.reshape((1,-1))
-        dist = np.repeat(dist, nbands, axis=0)
-        dist = np.concatenate((dist, np.array([np.nan]*nbands).reshape((nbands,1))), axis=1).flatten()
+        dist = np.concatenate((np.array([[np.nan]]*nseg), distance), axis=1).reshape((1,-1))
+        dist = np.repeat(dist, nbands, axis=0).flatten()
 
-        bk = np.array([np.nan]*nbands).reshape((1,nbands))
-        freq = np.concatenate((frequency[0,:,:], bk, frequency[1,:,:], bk, frequency[2,:,:], bk), axis=0).T
-        freq = np.concatenate((freq, np.array([np.nan]*(nbands)).reshape((nbands,1))), axis=1).flatten()
+        freq = np.insert(frequency, range(nseg), np.array([[np.nan]*nbands]), axis=0)
+        freq = np.concatenate(
+                sum(
+                    [[np.array([[np.nan]*nbands]), frequency[i,:,:]] for i in np.arange(nseg)],
+                []),
+            axis=0)
+        freq = freq.T.flatten()
 
         tickd = np.append(distance[:,0], distance[-1,-1])
         tickl = [bytes.decode(i) for i in np.append(label[:,0], label[-1,-1])]

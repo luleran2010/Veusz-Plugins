@@ -19,14 +19,14 @@ class ImportPluginBandStructure(plugins.ImportPlugin):
     # Uncomment this line for the plugin to get its own tab
     #promote_tab='Example'
 
-    file_extensions = set(['*'])
+    file_extensions = set(['.xml'])
 
     def __init__(self):
         plugins.ImportPlugin.__init__(self)
         self.fields = [
             plugins.ImportFieldCheck("import_fermi", descr="Import Fermi energy", default=True),
             plugins.ImportFieldCheck("sub_fermi", descr="Substract Fermi energy"),
-            plugins.ImportFieldCheck('details', descr='Detailed Information')
+            plugins.ImportFieldCheck('details', descr='Detailed information')
         ]
 
     def doImport(self, params: plugins.ImportPluginParams):
@@ -53,7 +53,7 @@ class ImportPluginBandStructure(plugins.ImportPlugin):
             name = 'up' if spin == Spin.up else 'dw'
             dat = bs.bands[spin]-efermi
             dat = np.insert(dat, breaks, np.nan, axis=1).flatten()
-            datasets.append(plugins.ImportDataset1D('energies_'+name, dat))
+            datasets.append(plugins.ImportDataset1D('bands_'+name, dat))
 
         dist = bs.distance[bs.branches[0]['start_index']]
         last_left, last_right = branch2labels(bs.branches[0]['name'])
@@ -90,7 +90,7 @@ class ImportPluginDOS(plugins.ImportPlugin):
     # Uncomment this line for the plugin to get its own tab
     #promote_tab='Example'
 
-    file_extensions = set(['*'])
+    file_extensions = set(['.xml'])
 
     def __init__(self):
         plugins.ImportPlugin.__init__(self)
@@ -119,7 +119,7 @@ class ImportPluginDOS(plugins.ImportPlugin):
 
         datasets.append(plugins.ImportDataset1D('energies', dos.energies-efermi))
         for spin in dos.densities.keys():
-            name = 'dos_up' if spin == Spin.up else 'dos_dw'
+            name = 'tdos_up' if spin == Spin.up else 'tdos_dw'
             datasets.append(plugins.ImportDataset1D(name, dos.densities[spin]))
 
         edos = dos.get_element_dos()
@@ -127,9 +127,9 @@ class ImportPluginDOS(plugins.ImportPlugin):
             odos = dos.get_element_spd_dos(elem)
             for spin in edos[elem].densities.keys():
                 sspin = 'up' if spin == Spin.up else 'dw'
-                datasets.append(plugins.ImportDataset1D('epdos_'+str(elem)+'_'+sspin, edos[elem].densities[spin]))
+                datasets.append(plugins.ImportDataset1D('pdos_'+str(elem)+'_'+sspin, edos[elem].densities[spin]))
                 for k in odos.keys():
-                    datasets.append(plugins.ImportDataset1D('eopdos_'+str(elem)+'_'+str(k)+'_'+sspin, data=odos[k].densities[spin]))
+                    datasets.append(plugins.ImportDataset1D('pdos_'+str(elem)+'_'+str(k)+'_'+sspin, data=odos[k].densities[spin]))
 
         return datasets
 
