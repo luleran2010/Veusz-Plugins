@@ -51,7 +51,7 @@ class ImportPluginPhononDispersion(plugins.ImportPlugin):
         tickd = np.append(distance[:,0], distance[-1,-1])
         tickl = [bytes.decode(i) for i in np.append(label[:,0], label[-1,-1])]
         for i in np.arange(0, len(tickl)):
-            if tickl[i] == 'Gamma':
+            if tickl[i] == '$\Gamma$':
                 tickl[i] = '\Gamma'
 
         details = []
